@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h3 class="mb-4">💳 Pay for Booking #{{ booking.id }}</h3>
+
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">🧾 Payment Summary</h5>
+      <ul class="list-group">
+        <li class="list-group-item">🏨 Room Charges: ₹{{ breakdown.room_price|floatformat:0 }}</li>
+        <li class="list-group-item">🛏️ Amenities: ₹{{ breakdown.amenity_price|floatformat:0 }}</li>
+        <li class="list-group-item">💆 Spa Services: ₹{{ breakdown.spa_price|floatformat:0 }}</li>
+        <li class="list-group-item">📦 Subtotal: ₹{{ breakdown.subtotal|floatformat:0 }}</li>
+        <li class="list-group-item">🧾 Tax (18%): ₹{{ breakdown.tax|floatformat:0 }}</li>
+        <li class="list-group-item">🎁 Discount: ₹{{ breakdown.discount|floatformat:0 }}</li>
+        <li class="list-group-item fw-bold">💰 Total Payable: ₹{{ breakdown.total|floatformat:0 }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Razorpay Pay Button -->
+  <button id="pay-btn" class="btn btn-success btn-lg">
+    Pay ₹{{ breakdown.total|floatformat:0 }}
+  </button>
+
+  <!-- Hidden form for success POST -->
+  <form id="payment-form" method="POST" action="{% url 'payment_success' %}" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+  </form>
+</div>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  const options = {
+    "key": "{{ razorpay_key }}",
+    "amount": {{ amount }}, // ✅ No quotes, int only
+    "currency": "INR",
+    "name": "Hotel Management",
+    "description": "Room Booking Payment",
+    "order_id": "{{ razorpay_order_id }}",
+    "handler": function (response) {
+      document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+      document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+      document.getElementById('razorpay_signature').value = response.razorpay_signature;
+      document.getElementById('payment-form').submit();
+    },
+    "prefill": {
+      "name": "{{ user.username }}"
+    },
+    "theme": {
+      "color": "#0d6efd"
+    }
+  };
+
+  const rzp = new Razorpay(options);
+  document.getElementById('pay-btn').onclick = function(e) {
+    rzp.open();
+    e.preventDefault();
+  };
+</script>
+{% endblock %}

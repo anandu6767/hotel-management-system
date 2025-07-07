@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4 text-primary">📋 Guest Feedback Summary</h2>
+
+{% if feedbacks %}
+  <table class="table table-bordered table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Guest</th>
+        <th>Room</th>
+        <th>Check-in</th>
+        <th>Rating</th>
+        <th>Cleanliness</th>
+        <th>Service</th>
+        <th>Facilities</th>
+        <th>Comment</th>
+        <th>Submitted</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fb in feedbacks %}
+      <tr>
+        <td>{{ fb.user.username }}</td>
+        <td>{{ fb.booking.room.room_number }}</td>
+        <td>{{ fb.booking.check_in }}</td>
+        <td>{{ fb.rating }}★</td>
+        <td>{{ fb.cleanliness_rating }}★</td>
+        <td>{{ fb.service_rating }}★</td>
+        <td>{{ fb.facilities_rating }}★</td>
+        <td>{{ fb.comment|default:"(No comments)" }}</td>
+        <td>{{ fb.submitted_at|date:"d M Y H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="alert alert-info">No feedback submitted yet.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">🧾 Payment Invoice</h2>
+  <div class="card shadow">
+    <div class="card-body">
+      <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+      <p><strong>Payment ID:</strong> {{ booking.razorpay_payment_id|default_if_none:"-" }}</p>
+      <p><strong>User:</strong> {{ booking.user.username }}</p>
+      <p><strong>Date:</strong> {{ booking.payment_time|date:"d M Y, h:i A"|default_if_none:"-" }}</p>
+
+      <hr>
+
+      <ul class="list-group">
+        <li class="list-group-item">🏨 Room: ₹{{ breakdown.room_price|floatformat:0 }}</li>
+        <li class="list-group-item">🛏️ Amenities: ₹{{ breakdown.amenity_price|floatformat:0 }}</li>
+        <li class="list-group-item">💆 Spa: ₹{{ breakdown.spa_price|floatformat:0 }}</li>
+        <li class="list-group-item">📦 Subtotal: ₹{{ breakdown.subtotal|floatformat:0 }}</li>
+        <li class="list-group-item">🧾 Tax (18%): ₹{{ breakdown.tax|floatformat:0 }}</li>
+        <li class="list-group-item">🎁 Discount: ₹{{ breakdown.discount|floatformat:0 }}</li>
+        <li class="list-group-item fw-bold">💰 Total Paid: ₹{{ breakdown.total|floatformat:0 }}</li>
+      </ul>
+
+      <a href="{% url 'download_invoice' booking.id %}" class="btn btn-primary mt-4">
+        ⬇️ Download Invoice (PDF)
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

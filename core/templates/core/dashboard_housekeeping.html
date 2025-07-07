@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- 🧹 Title -->
+  <h2 class="text-center mb-4 fw-bold text-primary">🧹 Housekeeping Dashboard</h2>
+
+  <!-- 🔘 Action Buttons -->
+  <div class="row justify-content-center g-3 mb-5">
+    <div class="col-md-3 col-sm-6">
+      <a href="{% url 'cleaned_rooms_history' %}" class="btn btn-outline-secondary w-100 py-3 shadow-sm">
+        🧹 Cleaning History
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <a href="{% url 'maintenance_list' %}" class="btn btn-outline-warning w-100 py-3 shadow-sm">
+        🛠 Maintenance Tasks
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <a href="{% url 'maintenance_create' %}" class="btn btn-outline-success w-100 py-3 shadow-sm">
+        ➕ Add Maintenance
+      </a>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <a href="{% url 'staff_mark_attendance' %}" class="btn btn-outline-info w-100 py-3 shadow-sm">
+        📋 Mark My Attendance
+      </a>
+    </div>
+  </div>
+
+  <!-- 🛏️ Rooms Requiring Cleaning -->
+  {% if tasks %}
+    <div class="card shadow">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">🛏️ Rooms Requiring Cleaning</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Room</th>
+                <th>Guest</th>
+                <th>Check-Out</th>
+                <th>Status</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for task in tasks %}
+                <tr>
+                  <td>{{ task.room.room_number }}</td>
+                  <td>{{ task.user.username }}</td>
+                  <td>{{ task.check_out }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ task.status }}</span>
+                  </td>
+                  <td class="text-center">
+                    <form method="post" action="{% url 'mark_cleaned' task.id %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-primary">✅ Mark Cleaned</button>
+                    </form>
+                    <a href="{% url 'maintenance_create' %}?room={{ task.room.id }}" class="btn btn-sm btn-outline-danger ms-2">
+                      🚨 Report Issue
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center mt-4">
+      ✅ No rooms currently require cleaning.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

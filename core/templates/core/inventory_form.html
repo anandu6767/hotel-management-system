@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-center mb-4 text-primary">➕ Add Inventory Item</h2>
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <form method="post" class="border p-4 shadow rounded bg-light">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <div class="text-center mt-3">
+        <button type="submit" class="btn btn-success w-100">💾 Save Item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

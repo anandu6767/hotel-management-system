@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">📦 Inventory Items</h2>
+    <div>
+      <a href="{% url 'inventory_create' %}" class="btn btn-success me-2">➕ Add Item</a>
+      <a href="{% url 'log_inventory_usage' %}" class="btn btn-warning">📝 Log Usage</a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Threshold</th>
+          <th>Last Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr class="{% if item.is_below_threshold %}table-warning{% endif %}">
+            <td>{{ item.name }}</td>
+            <td>{{ item.description }}</td>
+            <td class="{% if item.is_below_threshold %}text-danger fw-bold{% endif %}">
+              {{ item.quantity }}
+              {% if item.is_below_threshold %}<span class="badge bg-danger ms-1">Low</span>{% endif %}
+            </td>
+            <td>{{ item.threshold }}</td>
+            <td>{{ item.last_updated|date:"Y-m-d H:i" }}</td>
+            <td>
+              <a href="{% url 'inventory_edit' item.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted">No inventory items found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="py-5 text-center">
+  <h2 class="fw-bold">👤 Welcome, {{ user.username }}!</h2>
+</div>
+
+<div class="row g-4 px-4">
+  <!-- 🔹 Book a Room -->
+  <div class="col-md-4">
+    <div class="card border-0 shadow-lg text-center h-100">
+      <div class="card-body">
+        <div class="display-5 mb-3">🛏️</div>
+        <h5 class="card-title">Book a Room</h5>
+        <a href="{% url 'guest_booking_create' %}" class="btn btn-sm btn-primary mt-2">Start Booking</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 My Bookings -->
+  <div class="col-md-4">
+    <div class="card border-0 shadow-lg text-center h-100">
+      <div class="card-body">
+        <div class="display-5 mb-3">📅</div>
+        <h5 class="card-title">My Bookings</h5>
+        <a href="{% url 'guest_bookings' %}" class="btn btn-sm btn-secondary mt-2">View Bookings</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 Submit Feedback -->
+  <div class="col-md-4">
+    <div class="card border-0 shadow-lg text-center h-100">
+      <div class="card-body">
+        <div class="display-5 mb-3">💬</div>
+        <h5 class="card-title">Give your Feedback</h5>
+        <a href="{% url 'guest_bookings' %}#feedback" class="btn btn-sm btn-warning mt-2">Give Feedback</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔽 Active Bookings Section -->
+{% if bookings %}
+<div class="container mt-5">
+  <h4 class="text-center mb-4">📋 Your Active Bookings</h4>
+  <div class="row">
+    {% for booking in bookings %}
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-sm border-success border-2">
+        <div class="card-body">
+          <h5 class="card-title">Room {{ booking.room.room_number }}</h5>
+          <p class="card-text">
+            <strong>Status:</strong> {{ booking.status }}<br>
+            <strong>Check-in:</strong> {{ booking.check_in }}<br>
+            <strong>Check-out:</strong> {{ booking.check_out }}
+          </p>
+          {% if booking.status != 'Checked Out' %}
+          <form method="post" action="{% url 'booking_check_out' booking.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">Check Out</button>
+          </form>
+          {% else %}
+          <span class="badge bg-success">Completed</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- 🔽 Available Rooms Section -->
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Check Available Rooms</h2>
+
+  <form method="get" action="{% url 'available_rooms' %}" class="row g-3 justify-content-center mb-4">
+    <div class="col-md-3">
+      <label for="check_in" class="form-label">Check-in:</label>
+      <input type="date" name="check_in" id="check_in" value="{{ check_in }}" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+      <label for="check_out" class="form-label">Check-out:</label>
+      <input type="date" name="check_out" id="check_out" value="{{ check_out }}" class="form-control" required>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">🔍 Search</button>
+    </div>
+  </form>
+
+  {% if messages %}
+  <div class="mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <h4 class="mt-4">
+    {% if check_in and check_out %}
+      Rooms Available from {{ check_in }} to {{ check_out }}:
+    {% else %}
+      All Available Rooms:
+    {% endif %}
+  </h4>
+
+{% if rooms %}
+  <div class="row row-cols-1 row-cols-md-2 g-4 mt-3">
+    {% for room in rooms %}
+      <div class="col">
+        <div class="card h-100 border shadow-sm d-flex flex-column p-3">
+
+          <!-- ✅ Room Images Carousel (Large) -->
+          {% if room.images.all %}
+            <div id="carouselRoom{{ room.id }}" class="carousel slide mb-3" data-bs-ride="carousel">
+              <div class="carousel-inner rounded">
+                {% for image in room.images.all %}
+                  <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ image.image.url }}" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="Room Image">
+                  </div>
+                {% endfor %}
+              </div>
+              {% if room.images.count > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselRoom{{ room.id }}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselRoom{{ room.id }}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="bg-light text-center py-5 rounded mb-3" style="height: 300px;">
+              No Image Available
+            </div>
+          {% endif %}
+
+          <!-- ✅ Room Details -->
+          <div class="card-body d-flex flex-column">
+            <h4 class="card-title">Room {{ room.room_number }}</h4>
+            <p class="card-text fs-6">
+  <strong>Type:</strong> {{ room.get_room_type_display }}<br>
+  <strong>Price:</strong> ₹{{ room.price_per_night }} per night
+</p>
+            <div class="mt-auto text-center">
+              <a href="{% url 'book_room' room.id %}?check_in={{ check_in }}&check_out={{ check_out }}" class="btn btn-lg btn-success">🛏️ Book Now</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-info mt-4">No rooms available for the selected dates.</div>
+{% endif %}
+</div>
+
+<!-- 🔽 Footer Help -->
+<div class="text-center mt-5">
+  <small class="text-muted">🧾 Need help? Contact front desk support anytime.</small>
+</div>
+
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">📊 Manager Dashboard</h2>
+    <p class="text-muted">Quick access to core hotel operations and performance insights.</p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Manage Rooms -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow h-100 text-center">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <div class="display-5 mb-3">🛏️</div>
+            <h5 class="card-title">Rooms</h5>
+            <p class="text-muted small">Add, edit, and manage room availability</p>
+          </div>
+          <a href="{% url 'room_list' %}" class="btn btn-sm btn-primary mt-3">View & Edit</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Bookings -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow h-100 text-center">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <div class="display-5 mb-3">📆</div>
+            <h5 class="card-title">Bookings</h5>
+            <p class="text-muted small">Monitor and manage all hotel bookings</p>
+          </div>
+          <a href="{% url 'booking_list' %}" class="btn btn-sm btn-primary mt-3">View Bookings</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Maintenance -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow h-100 text-center">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <div class="display-5 mb-3">🔧</div>
+            <h5 class="card-title">Maintenance</h5>
+            <p class="text-muted small">Track and assign room maintenance tasks</p>
+          </div>
+          <div>
+            <a href="{% url 'maintenance_list' %}" class="btn btn-sm btn-outline-dark">View Tasks</a>
+            <a href="{% url 'maintenance_create' %}" class="btn btn-sm btn-success mt-2">+ Add Task</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow h-100 text-center">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <div class="display-5 mb-3">📦</div>
+            <h5 class="card-title">Inventory</h5>
+            <p class="text-muted small">Oversee and track hotel resources</p>
+          </div>
+          <a href="{% url 'inventory_list' %}" class="btn btn-sm btn-primary mt-3">Manage Inventory</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payments -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow h-100 text-center">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <div class="display-5 mb-3">💰</div>
+            <h5 class="card-title">Payments</h5>
+            <p class="text-muted small">Check completed and pending payments</p>
+          </div>
+          <a href="{% url 'payment_list' %}" class="btn btn-sm btn-primary mt-3">View Payments</a>
+        </div>
+      </div>
+    </div>
+<!-- Salary Report -->
+<div class="col-md-4">
+  <div class="card border-0 shadow h-100 text-center">
+    <div class="card-body d-flex flex-column justify-content-between">
+      <div>
+        <div class="display-5 mb-3">📈</div>
+        <h5 class="card-title">Salary Report</h5>
+        <p class="text-muted small">View salary calculations based on attendance</p>
+      </div>
+      <a href="{% url 'salary_report' %}" class="btn btn-sm btn-info mt-3">View Report</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- Assign Salary -->
+<div class="col-md-4">
+  <div class="card border-0 shadow h-100 text-center">
+    <div class="card-body d-flex flex-column justify-content-between">
+      <div>
+        <div class="display-5 mb-3">💼</div>
+        <h5 class="card-title">Assign Salary</h5>
+        <p class="text-muted small">Set daily wage rate for staff</p>
+      </div>
+      <a href="{% url 'assign_salary' %}" class="btn btn-sm btn-primary mt-3">Assign</a>
+    </div>
+  </div>
+</div>
+
+<!-- Mark Attendance -->
+<div class="col-md-4">
+  <div class="card border-0 shadow h-100 text-center">
+    <div class="card-body d-flex flex-column justify-content-between">
+      <div>
+        <div class="display-5 mb-3">🕒</div>
+        <h5 class="card-title">Attendance</h5>
+        <p class="text-muted small">Record staff attendance and View</p>
+      </div>
+      <a href="{% url 'mark_attendance' %}" class="btn btn-sm btn-warning mt-3">Mark Now</a>
+    </div>
+  </div>
+</div>
+
+    <!-- Guest Feedback -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow h-100 text-center">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <div class="display-5 mb-3">📝</div>
+            <h5 class="card-title">Feedback</h5>
+            {% if unread_feedback_count > 0 %}
+              <span class="badge text-bg-warning mb-1">📨 {{ unread_feedback_count }} Unread</span><br>
+            {% endif %}
+            {% if low_rating_count > 0 %}
+              <span class="badge text-bg-danger mb-1">⚠️ {{ low_rating_count }} Low Rating</span><br>
+            {% endif %}
+            <p class="text-muted small mt-2">Read guest experiences and suggestions</p>
+          </div>
+          <a href="{% url 'feedback_list' %}" class="btn btn-sm btn-info mt-3">View Feedback</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white mt-5 pt-4 pb-3">
+  <div class="container">
+    <div class="row text-center text-md-start">
+      <!-- About Hotel -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-warning">🏨 About Us</h5>
+        <p class="small">
+          Welcome to our hotel! We provide premium rooms, spa services, and world-class hospitality for every guest. Your comfort is our priority.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-warning">🔗 Quick Links</h5>
+        <ul class="list-unstyled small">
+          <li><a href="{% url 'guest_bookings' %}" class="text-white text-decoration-none">My Bookings</a></li>
+          <li><a href="{% url 'submit_feedback' booking_id=1 %}" class="text-white text-decoration-none">Submit Feedback</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-warning">📞 Contact</h5>
+        <p class="small mb-1"><i class="bi bi-geo-alt-fill me-2"></i>Thrissur, Kerala, India</p>
+        <p class="small mb-1"><i class="bi bi-telephone-fill me-2"></i>+91 8848 655 902</p>
+        <p class="small mb-0"><i class="bi bi-envelope-fill me-2"></i>support@hotelbooking.com</p>
+      </div>
+    </div>
+
+    <hr class="bg-light" />
+    <div class="text-center small">
+      &copy; {{ now|date:"Y" }} Hotel Management System. All rights reserved.
+    </div>
+  </div>
+</footer>  
+
+{% endblock %}

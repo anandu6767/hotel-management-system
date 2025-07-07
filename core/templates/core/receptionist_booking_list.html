@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container py-5">
+  <h2 class="mb-4 text-center">📋 All Bookings</h2>
+
+  <!-- ✅ Flash Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if bookings %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for booking in bookings %}
+        <div class="col">
+          <div class="card shadow-sm h-100 border border-secondary">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <h5 class="card-title mb-3">🏨 Room <strong>{{ booking.room.room_number }}</strong></h5>
+
+              <ul class="list-unstyled small mb-3">
+                <li><strong>👤 User:</strong> {{ booking.user.username }}</li>
+                <li><strong>📅 Check-In:</strong> {{ booking.check_in }}</li>
+                <li><strong>📅 Check-Out:</strong> {{ booking.check_out }}</li>
+              </ul>
+
+              <!-- 🔔 Alerts for Today -->
+              {% if booking.check_in == today and booking.status == 'Pending' %}
+                <div class="alert alert-info py-1 px-2 small mb-3">
+                  📅 This booking is scheduled for <strong>Check-In today</strong>.
+                </div>
+              {% elif booking.check_out == today and booking.status == 'Checked In' %}
+                <div class="alert alert-secondary py-1 px-2 small mb-3">
+                  📤 This booking is scheduled for <strong>Check-Out today</strong>.
+                </div>
+              {% endif %}
+
+              <!-- 🔖 Status & Payment -->
+              <div class="mb-3">
+                <strong>📌 Status:</strong>
+                <span class="badge 
+                  {% if booking.status == 'Pending' %} bg-warning text-dark
+                  {% elif booking.status == 'Checked In' %} bg-success
+                  {% elif booking.status == 'Checked Out' %} bg-secondary
+                  {% elif booking.status == 'Canceled' %} bg-danger
+                  {% elif booking.status == 'No-Show' %} bg-dark
+                  {% else %} bg-info {% endif %}">
+                  {{ booking.status }}
+                </span>
+                <br>
+                <strong>💳 Payment:</strong>
+                {% if booking.is_paid %}
+                  <span class="text-success fw-bold">Paid</span>
+                {% else %}
+                  <span class="text-danger fw-bold">Unpaid</span>
+                {% endif %}
+              </div>
+
+              <!-- 🔧 Actions -->
+              <div class="d-flex flex-wrap gap-2">
+                {% if booking.status != 'Canceled' %}
+                  <a href="{% url 'booking_cancel' booking.id %}" class="btn btn-outline-danger btn-sm">
+                    ❌ Cancel
+                  </a>
+                {% endif %}
+
+                <!-- ✅ Check-In -->
+                {% if booking.status == 'Pending' and booking.check_in == today %}
+                  {% if booking.is_paid %}
+                    <form method="post" action="{% url 'booking_check_in' booking.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-outline-primary btn-sm">✅ Check-In</button>
+                    </form>
+                  {% else %}
+                    <span class="text-danger small mt-1">⚠️ Payment pending</span>
+                  {% endif %}
+                {% endif %}
+
+                <!-- ✅ Check-Out -->
+                {% if booking.status == 'Checked In' and today >= booking.check_in and today <= booking.check_out %}
+                  <form method="post" action="{% url 'booking_check_out' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">📤 Check-Out</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-muted">No bookings found.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

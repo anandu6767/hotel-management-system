@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2>Payment Successful</h2>
+  <p>Thank you for your booking! Your payment has been received.</p>
+  <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+  <p><strong>Status:</strong> Paid ✅</p>
+</div>
+{% endblock %}

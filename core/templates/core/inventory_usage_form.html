@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4 text-primary">📦 Log Inventory Usage</h2>
+
+<form method="post">
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label for="id_item" class="form-label">Item</label>
+    {{ form.item }}
+  </div>
+
+  <div class="mb-3">
+    <label for="id_quantity_used" class="form-label">Quantity Used</label>
+    {{ form.quantity_used }}
+  </div>
+
+  <div class="mb-3">
+    <label for="id_used_by" class="form-label">Used By</label>
+    {{ form.used_by }}
+  </div>
+
+  <div class="mb-3">
+    <label for="id_usage_notes" class="form-label">Usage Notes</label>
+    {{ form.usage_notes }}
+  </div>
+
+  <button type="submit" class="btn btn-success">✅ Log Usage</button>
+</form>
+
+{% endblock %}

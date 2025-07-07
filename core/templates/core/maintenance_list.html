@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <h2 class="text-center mb-4">🛠 Maintenance Tasks</h2>
+
+  {% if tasks %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Room</th>
+            <th>Issue</th>
+            <th>Scheduled Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+          <tr>
+            <td>{{ task.room.room_number }}</td>
+            <td>{{ task.issue }}</td>
+            <td>{{ task.scheduled_date }}</td>
+            <td>
+              {% if task.is_completed %}
+                <span class="badge bg-success">Completed</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if not task.is_completed and can_complete %}
+                <form method="post" action="{% url 'maintenance_mark_completed' task.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-success">Mark Completed</button>
+                </form>
+              {% else %}
+                <span class="text-muted">-</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">No maintenance tasks found.</div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

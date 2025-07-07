@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container text-center py-5">
+  <h3 class="mb-4">📋 Attendance</h3>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% if already_marked %}
+    <div class="alert alert-info">You have already marked your attendance for today.</div>
+  {% else %}
+    <form method="post">
+      {% csrf_token %}
+      <button class="btn btn-success">✅ Mark My Attendance</button>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

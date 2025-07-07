@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+  <h3 class="text-center mb-4">📝 Walk-in Booking</h3>
+
+  <form method="POST" enctype="multipart/form-data" class="p-4 border rounded shadow bg-light">
+    {% csrf_token %}
+    
+    <h5 class="text-primary fw-bold">Guest Details</h5>
+    <hr>
+    {% for field in user_form %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-danger small">{{ field.errors|striptags }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    {% for field in profile_form %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-danger small">{{ field.errors|striptags }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <h5 class="text-primary mt-4 fw-bold">Booking Details</h5>
+    <hr>
+    {% for field in booking_form %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-danger small">{{ field.errors|striptags }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-success px-5 rounded-pill">✅ Confirm Booking</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

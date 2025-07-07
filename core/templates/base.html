@@ -1,0 +1,207 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ✅ Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body { padding-top: 70px; }
+    .nav-link { font-weight: 500; color: #444 !important; }
+    .nav-link:hover { color: #0d6efd !important; text-decoration: underline; }
+    .navbar-brand { font-size: 1.3rem; }
+
+    /* 🔔 Fix bell icon badge position */
+    .notification-icon {
+      position: relative;
+      display: inline-block;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      transform: translate(40%, -40%);
+      padding: 4px 6px;
+      font-size: 10px;
+    }
+    .navbar-brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+  font-family: 'Georgia', serif;
+   color: #bfa136 !important;
+}
+  </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100" style="background-image: url('{% static 'images/bg4.avif' %}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+
+  <!-- ✅ Toast Container at top-right -->
+  <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 9999; margin-top: 70px;">
+    {% for message in messages %}
+      <div class="toast align-items-center text-white bg-{{ message.tags|default:'info' }} border-0 mb-2" role="alert">
+        <div class="d-flex">
+          <div class="toast-body">{{ message }}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold text-dark" href="#" style="font-size: 1.8rem; font-family: 'Georgia', serif;">
+   Royal Crest Hotel
+</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAlt">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNavAlt">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if user.is_authenticated %}
+            {% if user.role == 'manager' %}
+              <!-- Manager Nav Items -->
+              <li class="nav-item"><a class="nav-link" href="{% url 'manager_dashboard' %}">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'room_list' %}">Rooms</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'booking_list' %}">Bookings</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'maintenance_list' %}">Maintenance</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'inventory_list' %}">Inventory</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'feedback_list' %}">Guest Feedback</a></li>
+            {% elif user.role == 'admin' %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'feedback_list' %}">Feedback</a></li>
+            {% elif user.role == 'receptionist' %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'receptionist_dashboard' %}">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'receptionist_booking_create' %}">Create Booking</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'receptionist_bookings' %}">View Bookings</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'available_rooms' %}">Available Rooms</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'maintenance_list' %}">Maintenance</a></li>
+            {% elif user.role == 'guest' %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'guest_dashboard' %}">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'guest_booking_create' %}">Book Room</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'guest_bookings' %}">My Bookings</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'available_rooms' %}">Available Rooms</a></li>
+            {% elif user.role == 'housekeeping' %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'housekeeping_dashboard' %}">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'cleaned_rooms_history' %}">Cleaning History</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'maintenance_list' %}">Maintenance Tasks</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'maintenance_create' %}">Report Issue</a></li>
+            {% endif %}
+
+            {% if user.role == 'receptionist' or user.role == 'manager' %}
+              <li class="nav-item position-relative">
+                <a class="nav-link" href="{% url 'contact_messages_list' %}">
+                  📬 Contact Messages
+                  {% if unread_contact_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                      {{ unread_contact_count }}
+                      <span class="visually-hidden">unread contact messages</span>
+                    </span>
+                  {% endif %}
+                </a>
+              </li>
+            {% endif %}
+          {% endif %}
+        </ul>
+
+        <!-- ✅ Right side of navbar -->
+        <ul class="navbar-nav ms-auto d-flex align-items-center gap-3">
+  {% if user.is_authenticated %}
+    <!-- 🔔 Notification Bell -->
+    <li class="nav-item">
+      <a class="nav-link notification-icon" href="{% url 'all_notifications' %}">
+        <i class="bi bi-bell fs-5"></i>
+        {% if unread_notification_count > 0 %}
+          <span class="badge rounded-circle bg-danger notification-badge">
+            {{ unread_notification_count }}
+          </span>
+        {% endif %}
+      </a>
+    </li>
+    <!-- 🚪 Logout Button -->
+    <li class="nav-item">
+      <a class="btn btn-outline-danger btn-sm" href="{% url 'logout' %}">Logout</a>
+    </li>
+  {% else %}
+    <li class="nav-item">
+      <a class="btn btn-outline-primary me-2" href="{% url 'login' %}">Login</a>
+    </li>
+    <li class="nav-item">
+      <a class="btn btn-primary" href="{% url 'register' %}">Register</a>
+    </li>
+  {% endif %}
+</ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ✅ Main Content -->
+  <main class="flex-grow-1">
+    <div class="container py-4">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </main>
+
+  <!-- ✅ Sticky Footer -->
+  <footer class="bg-dark text-white mt-auto py-4">
+    <div class="container text-center text-md-start small">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h5 class="text-warning">🏨 About Us</h5>
+          <p>Premium hospitality and top-class comfort.</p>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span>About Us:</span>
+            <a href="{% url 'about_us' %}" class="text-white text-decoration-none">Click Here</a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <h5 class="text-warning">🔗 Quick Links</h5>
+          <ul class="list-unstyled">
+  {% if not request.user.is_authenticated %}
+    <!-- 🏠 Show Home only on login page (when not logged in) -->
+    <li class="mb-2">
+      <a href="{% url 'home' %}" class="text-white text-decoration-none">Home</a>
+    </li>
+  {% endif %}
+            <li class="mb-2 d-flex align-items-center gap-2">
+              <span>Contact Us:</span>
+              <a href="{% url 'contact' %}" class="text-white text-decoration-none">Click Here</a>
+            </li>
+            {% if request.user.is_authenticated %}
+              <li class="mb-2"><a href="{% url 'guest_bookings' %}" class="text-white text-decoration-none">My Bookings</a></li>
+              <li><a href="{% url 'submit_feedback' booking_id=1 %}" class="text-white text-decoration-none">Feedback</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5 class="text-warning">📞 Contact</h5>
+          <p class="mb-2">Email: support@hotelbooking.com</p>
+          <p class="mb-2">Phone: +91 98765 43210</p>
+          <p class="mb-2">Location: Thrissur, Kerala</p>
+        </div>
+      </div>
+      <div class="text-center mt-4 text-secondary">
+        &copy; {{ year|default:2025 }} Hotel Management System. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ✅ Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll('.toast').forEach(toastEl => new bootstrap.Toast(toastEl).show());
+    });
+  </script>
+</body>
+</html>

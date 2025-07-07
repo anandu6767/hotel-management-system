@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center mb-4">📅 My Bookings</h2>
+
+  {% if bookings %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for booking in bookings %}
+        <div class="col">
+          <div class="card shadow-sm h-100 border border-secondary">
+
+            <!-- ✅ Show Room Image -->
+            {% with booking.room.images.first as img %}
+              {% if img %}
+                <img src="{{ img.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Room Image">
+              {% else %}
+                <div class="bg-light text-center py-5">
+                  <span class="text-muted">No Image Available</span>
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div class="card-body">
+              <h5 class="card-title">Room {{ booking.room.room_number }}</h5>
+
+              <!-- ✅ Room Type -->
+              <p><strong>Type:</strong> {{ booking.room.get_room_type_display }}</p>
+
+              <!-- ✅ Amenities 
+              <p>
+                <strong>Amenities:</strong>
+                {% for amenity in booking.room.amenities.all %}
+                  {{ amenity.name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                  <span class="text-muted">None</span>
+                {% endfor %}
+              </p>-->
+
+              <p class="card-text">
+                <strong>Check-In:</strong> {{ booking.check_in }}<br>
+                <strong>Check-Out:</strong> {{ booking.check_out }}<br>
+                <strong>Booked At:</strong> {{ booking.created_at|date:"Y-m-d H:i" }}
+              </p>
+
+              <!-- 🔖 Booking Status -->
+              <p>
+                <strong>Status:</strong>
+                <span class="badge 
+                  {% if booking.status == 'Pending' %} bg-warning text-dark
+                  {% elif booking.status == 'Checked In' %} bg-success
+                  {% elif booking.status == 'Checked Out' %} bg-secondary
+                  {% elif booking.status == 'Canceled' or booking.status == 'No-Show' %} bg-danger
+                  {% else %} bg-info {% endif %}">
+                  {{ booking.status }}
+                </span>
+              </p>
+
+              <!-- 💳 Payment Status -->
+              {% if booking.is_paid %}
+                <p><strong>Payment:</strong> <span class="badge bg-success">Paid</span></p>
+              {% else %}
+                <p><strong>Payment:</strong> <span class="badge bg-warning text-dark">Unpaid</span></p>
+              {% endif %}
+
+              <!-- 🔘 Actions -->
+              <div class="d-flex flex-wrap gap-2">
+
+                {% if not booking.is_paid and booking.status != 'Canceled' %}
+                  <a href="{% url 'razorpay_payment' booking.id %}" class="btn btn-sm btn-primary">💳 Pay Now</a>
+                {% endif %}
+
+                <!-- ✍️ Feedback Button -->
+                {% if booking.status == 'Checked Out' %}
+                  {% if not booking.feedback_set.exists %}
+                    <a href="{% url 'submit_feedback' booking.id %}" class="btn btn-sm btn-outline-success">
+                      ✍️ Give Feedback
+                    </a>
+                  {% else %}
+                    <span class="badge bg-info text-dark">✅ Feedback Submitted</span>
+                  {% endif %}
+                {% endif %}
+
+                <!-- 📸 Photos Button -->
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#galleryModal{{ booking.id }}">
+                  📸 Photos
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🖼️ Modal for Room Images -->
+          <div class="modal fade" id="galleryModal{{ booking.id }}" tabindex="-1" aria-labelledby="galleryModalLabel{{ booking.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="galleryModalLabel{{ booking.id }}">Room {{ booking.room.room_number }} - Gallery</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row g-3">
+                    {% for image in booking.room.images.all %}
+                      <div class="col-md-4">
+                        <img src="{{ image.image.url }}" class="img-fluid rounded border" alt="Room Image">
+                      </div>
+                    {% empty %}
+                      <div class="text-muted text-center">No images available for this room.</div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center mt-5">You haven't made any bookings yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

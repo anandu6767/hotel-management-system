@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">🔔 All Notifications</h2>
+
+  {% if notifications %}
+    <ul class="list-group shadow-sm">
+      {% for note in notifications %}
+        <li class="list-group-item d-flex justify-content-between align-items-start {% if not note.is_read %}bg-light{% endif %}">
+          <div class="ms-2 me-auto">
+            <div class="fw-semibold">{{ note.message }}</div>
+            <small class="text-muted">{{ note.created_at|naturaltime }}</small>
+          </div>
+          {% if not note.is_read %}
+            <span class="badge bg-primary rounded-pill">New</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info text-center">No notifications to show.</div>
+  {% endif %}
+</div>
+{% endblock %}

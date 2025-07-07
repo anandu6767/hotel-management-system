@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- 🔹 Header -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-primary">👩‍💼 Receptionist Dashboard</h2>
+    <p class="text-muted">Quick actions for daily hotel operations</p>
+  </div>
+
+  <!-- 🔹 Action Cards -->
+  <div class="row g-4">
+    <!-- 📝 Create Booking -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 text-center">
+        <div class="card-body">
+          <div class="display-3 mb-3">📝</div>
+          <h5 class="card-title">Create Booking</h5>
+          <a href="{% url 'receptionist_booking_create' %}" class="btn btn-primary mt-3">New Booking</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🚶‍♂️ Walk-in Booking -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 text-center">
+        <div class="card-body">
+          <div class="display-3 mb-3">🚶‍♂️</div>
+          <h5 class="card-title">Walk-in Booking</h5>
+          <a href="{% url 'walkin_booking' %}" class="btn btn-success mt-3">Start Walk-in</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📄 View Bookings -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 text-center">
+        <div class="card-body">
+          <div class="display-3 mb-3">📄</div>
+          <h5 class="card-title">View Bookings</h5>
+          <a href="{% url 'receptionist_bookings' %}" class="btn btn-secondary mt-3">Manage Bookings</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🛏️ Available Rooms -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 text-center">
+        <div class="card-body">
+          <div class="display-3 mb-3">🛏️</div>
+          <h5 class="card-title">Available Rooms</h5>
+          <a href="{% url 'available_rooms' %}" class="btn btn-info text-white mt-3">Check Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔧 Maintenance -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 text-center">
+        <div class="card-body">
+          <div class="display-3 mb-3">🔧</div>
+          <h5 class="card-title">Maintenance Tasks</h5>
+          <a href="{% url 'maintenance_list' %}" class="btn btn-warning mt-3">View Tasks</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 💰 Payment Records -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 text-center">
+        <div class="card-body">
+          <div class="display-3 mb-3">💰</div>
+          <h5 class="card-title">Payment Records</h5>
+          <a href="{% url 'payment_list' %}" class="btn btn-outline-dark mt-3">View Payments</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📋 Mark Attendance -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 text-center">
+        <div class="card-body">
+          <div class="display-3 mb-3">📋</div>
+          <h5 class="card-title">Mark My Attendance</h5>
+          <a href="{% url 'staff_mark_attendance' %}" class="btn btn-outline-dark mt-3">Mark Attendance</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center mb-4">💳 Payment List</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="alert alert-success">✅ Total Paid: ₹{{ total_paid }}</div>
+    </div>
+    <div class="col-md-6">
+      <div class="alert alert-warning">❌ Total Unpaid: ₹{{ total_unpaid }}</div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Room</th>
+          <th>User</th>
+          <th>Check-In</th>
+          <th>Check-Out</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Booked At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+          <tr>
+            <td>{{ booking.id }}</td>
+            <td>{{ booking.room.room_number }}</td>
+            <td>{{ booking.user.username }}</td>
+            <td>{{ booking.check_in }}</td>
+            <td>{{ booking.check_out }}</td>
+            <td>₹{{ booking.total }}</td>
+            <td>
+              <span class="badge 
+                {% if booking.status == 'Pending' %} bg-warning text-dark
+                {% elif booking.status == 'Checked In' %} bg-success
+                {% elif booking.status == 'Checked Out' %} bg-secondary
+                {% elif booking.status == 'Canceled' %} bg-danger
+                {% else %} bg-info {% endif %}">
+                {{ booking.status }}
+              </span>
+            </td>
+            <td>
+              {% if booking.is_paid %}
+                <span class="badge bg-success">Paid</span>
+              {% else %}
+                <span class="badge bg-danger">Unpaid</span>
+              {% endif %}
+            </td>
+            <td>{{ booking.created_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="9" class="text-center text-muted">No bookings found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

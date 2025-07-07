@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  body {
+    background: url("{% static 'images/bg4.avif' %}") no-repeat center center fixed;
+    background-size: cover;
+  }
+
+  .hero-section {
+    background: url("{% static 'images/home.avif' %}") no-repeat center center;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-overlay {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 60px 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-overlay h1 {
+    font-size: 3rem;
+    font-weight: bold;
+  }
+
+  .hero-overlay p {
+    font-size: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero-overlay h1 {
+      font-size: 2rem;
+    }
+  }
+
+  .carousel-item {
+    height: 100vh;
+    min-height: 600px;
+    background-size: cover;
+    background-position: center center;
+  }
+
+  .carousel-caption {
+    background-color: rgba(0, 0, 0, 0.3); /* Optional semi-dark */
+    padding: 30px;
+    border-radius: 15px;
+  }
+
+  .carousel-caption h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .carousel-caption p {
+    font-size: 1.25rem;
+    color: #f8f9fa;
+  }
+
+  .carousel-caption .btn {
+    margin-top: 15px;
+  }
+</style>
+</style>
+
+<!-- ✅ Hero Section with Carousel -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+  <div class="carousel-inner">
+    <div class="carousel-item active" style="background-image: url('{% static 'images/slide1.jpg' %}')">
+      <div class="container h-100 d-flex align-items-center justify-content-center">
+        <div class="carousel-caption text-center">
+          <h1>🏨 Welcome to Our Hotel</h1>
+          <p>Experience seamless bookings, comfort, and convenience for every guest.</p>
+          <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Get Started</a>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image: url('{% static 'images/slider22.avif' %}')">
+      <div class="container h-100 d-flex align-items-center justify-content-center">
+        <div class="carousel-caption text-center">
+          <h1>✨ Stay Relaxed</h1>
+          <p>Enjoy a luxury experience in our well-furnished rooms.</p>
+          <!--<a href="{% url 'available_rooms' %}" class="btn btn-light btn-lg">View Rooms</a>-->
+        </div>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image: url('{% static 'images/slide3.avif' %}')">
+      <div class="container h-100 d-flex align-items-center justify-content-center">
+        <div class="carousel-caption text-center">
+          <h1>🌐 Book Instantly</h1>
+          <p>Online reservation and hassle-free check-ins.</p>
+          <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Login / Register</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional Controls -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+<!-- 🔹 Roles Section -->
+<div class="container text-center py-5">
+  <h2 class="fw-bold mb-4">Choose Your Role</h2>
+
+  <!-- Guest -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-10">
+      <div class="card h-100 shadow-sm p-4">
+        <div class="card-body text-center">
+          <h3 class="fw-bold">🧍 Guest</h3>
+          <p class="text-muted">Book rooms, give feedback and manage your stays with ease.</p>
+          <a href="{% url 'login' %}" class="btn btn-primary">Login / Register</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 justify-content-center">
+    <!-- Receptionist -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="fw-bold">🧑‍💼 Receptionist</h5>
+          <p>Manage bookings, check-ins, and check-outs.</p>
+          <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manager -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="fw-bold">👨‍💼 Manager</h5>
+          <p>Oversee staff, reports, inventory and more.</p>
+          <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Housekeeping -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="fw-bold">🧹 Housekeeping</h5>
+          <p>Update room cleaning status and manage tasks.</p>
+          <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="fw-bold">🔑 Admin</h5>
+          <p>Full system control and user role management.</p>
+          <a href="{% url 'admin:login' %}" class="btn btn-danger">Admin Panel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🌟 Testimonials -->
+<div class="bg-light py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4">What Our Guests Say</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <blockquote class="blockquote">
+          <p>"Easy booking and fantastic stay. Loved the experience!"</p>
+          <footer class="blockquote-footer">Anjali Rajeev, Kochi</footer>
+        </blockquote>
+      </div>
+      <div class="col-md-4">
+        <blockquote class="blockquote">
+          <p>"The rooms were super clean and the staff very friendly."</p>
+          <footer class="blockquote-footer">Adiv Kaja, Bangalore</footer>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 📖 About Us -->
+<div class="container py-5">
+  <h2 class="text-center fw-bold mb-4">About Us</h2>
+  <p class="text-center">
+    Our hotel management system is designed to simplify the stay experience for guests and streamline daily operations for hotel staff. We bring innovation, reliability, and ease to hotel administration and guest satisfaction.
+  </p>
+</div>
+
+<!-- 📞 Contact Us -->
+<div class="bg-dark text-white py-5">
+  <div class="container text-center">
+    <h4 class="fw-bold mb-3">Need Help?</h4>
+    <p class="mb-1">📞 +91 98765 43210</p>
+    <p class="mb-3">📧 support@ourhotel.com</p>
+    <a href="{% url 'contact' %}" class="btn btn-outline-light">Contact Us</a>
+    <span class="mx-2">|</span>
+    <a href="{% url 'about_us' %}" class="btn btn-outline-light">About Us</a>
+  </div>
+</div>
+
+{% endblock %}

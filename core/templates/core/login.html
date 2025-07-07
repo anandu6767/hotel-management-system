@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 style="text-align:center; margin-top: 30px;">Login</h2>
+
+{% if messages %}
+  <ul style="list-style: none; text-align: center; padding: 0;">
+    {% for message in messages %}
+      <li style="
+        color:
+          {% if message.tags == 'success' %}green
+          {% elif message.tags == 'error' %}red
+          {% elif message.tags == 'warning' %}orange
+          {% else %}blue{% endif %};
+      ">
+        {{ message }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<form method="post" style="max-width: 400px; margin: 30px auto;">
+  {% csrf_token %}
+
+  <label for="username">Username:</label><br>
+  <input type="text" name="username" id="username" required style="width: 100%; padding: 8px;"><br><br>
+
+  <label for="password">Password:</label><br>
+  <input type="password" name="password" id="password" required style="width: 100%; padding: 8px;"><br><br>
+
+  <button type="submit" style="width: 100%; padding: 10px;">Login</button>
+</form>
+
+<p style="text-align:center; margin-top: 10px;">
+  New here? <a href="{% url 'register' %}">Register</a>.
+  
+</p>
+<p style="text-align:center;">
+  <a href="{% url 'password_reset' %}">Forgot Password?</a>
+</p>
+{% endblock %}

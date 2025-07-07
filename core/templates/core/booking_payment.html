@@ -1,0 +1,22 @@
+<h2>Payment for Booking {{ booking.id }}</h2>
+
+<ul>
+  <li>Room: ₹{{ bill.room }}</li>
+  <li>Services: ₹{{ bill.services }}</li>
+  <li>Subtotal: ₹{{ bill.subtotal }}</li>
+  <li>Tax (18%): ₹{{ bill.tax }}</li>
+  <li>Discount: ₹{{ bill.discount }}</li>
+  <li><strong>Total: ₹{{ bill.total }}</strong></li>
+</ul>
+
+<form method="post">
+  {% csrf_token %}
+  <label>Payment Method:</label>
+  <select name="payment_method">
+    <option value="Cash">Cash</option>
+    <option value="UPI">UPI</option>
+    <option value="Card">Card</option>
+    <option value="Wallet">Wallet</option>
+  </select>
+  <button type="submit">Mark as Paid</button>
+</form>

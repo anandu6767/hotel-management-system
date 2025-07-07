@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">📋 All Bookings</h2>
+
+  <!-- 🔎 Filters -->
+  <form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+      <label class="form-label">Check-in Date:</label>
+      <input type="date" name="check_in" value="{{ check_in }}" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Room:</label>
+      <select name="room" class="form-select">
+        <option value="">All</option>
+        {% for room in rooms %}
+          <option value="{{ room.id }}" {% if room.id|stringformat:"s" == selected_room %}selected{% endif %}>
+            {{ room.room_number }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Status:</label>
+      <select name="status" class="form-select">
+        <option value="">All</option>
+        <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="Checked In" {% if selected_status == 'Checked In' %}selected{% endif %}>Checked In</option>
+        <option value="Checked Out" {% if selected_status == 'Checked Out' %}selected{% endif %}>Checked Out</option>
+        <option value="Canceled" {% if selected_status == 'Canceled' %}selected{% endif %}>Canceled</option>
+        <option value="No-Show" {% if selected_status == 'No-Show' %}selected{% endif %}>No-Show</option>
+      </select>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+  </form>
+
+  {% if bookings %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Room</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Booked At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in bookings %}
+            <tr>
+              <td>#{{ booking.id }}</td>
+              <td>{{ booking.user.username }}</td>
+              <td>{{ booking.room.room_number }}</td>
+              <td>{{ booking.check_in }}</td>
+              <td>{{ booking.check_out }}</td>
+              <td>
+                <span class="badge 
+                  {% if booking.status == 'Pending' %}bg-warning text-dark
+                  {% elif booking.status == 'Checked In' %}bg-success
+                  {% elif booking.status == 'Checked Out' %}bg-secondary
+                  {% elif booking.status == 'Canceled' or booking.status == 'No-Show' %}bg-danger
+                  {% endif %}">
+                  {{ booking.status }}
+                </span>
+              </td>
+              <td>
+                {% if booking.is_paid %}
+                  <span class="badge bg-success">Paid</span>
+                {% else %}
+                  <span class="badge bg-danger">Unpaid</span>
+                {% endif %}
+              </td>
+              <td>{{ booking.created_at|date:"Y-m-d H:i" }}</td>
+              <td>
+                {% now "Y-m-d" as today %}
+                {% with today_date=today|stringformat:"s" %}
+  {% if booking.status == 'Pending' and booking.check_in|stringformat:"s" == today_date %}
+    {% if booking.is_paid %}
+      <form method="post" action="{% url 'booking_check_in' booking.id %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success btn-sm">Check In</button>
+      </form>
+    {% else %}
+      <span class="badge bg-warning text-dark">Payment Pending</span>
+    {% endif %}
+  
+  {% elif booking.status == 'Checked In' and booking.check_in|stringformat:"s" <= today_date and booking.check_out|stringformat:"s" >= today_date %}
+    <form method="post" action="{% url 'booking_check_out' booking.id %}" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-warning btn-sm">Check Out</button>
+    </form>
+
+  {% else %}
+    <span class="text-muted small">No Actions</span>
+  {% endif %}
+{% endwith %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info mt-3">No bookings found.</div>
+  {% endif %}
+</div>
+
+{% endblock %}

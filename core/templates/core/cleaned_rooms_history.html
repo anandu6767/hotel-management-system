@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <h2 class="mb-4 text-center">🧼 Cleaned Rooms History</h2>
+
+  {% if cleaned_tasks %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Room</th>
+            <th>Guest</th>
+            <th>Check-Out</th>
+            <th>Status</th>
+            <th>Cleaned By</th>  <!-- 🧹 New column -->
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in cleaned_tasks %}
+          <tr>
+            <td>{{ task.room.room_number }}</td>
+            <td>{{ task.user.username }}</td>
+            <td>{{ task.check_out|date:"Y-m-d" }}</td>
+            <td>{{ task.status }}</td>
+            <td>
+              {% if task.cleaned_by %}
+                {{ task.cleaned_by.username }} <br>
+                <small class="text-muted">{{ task.cleaned_at|date:"Y-m-d H:i" }}</small>
+              {% else %}
+                <span class="text-muted">Not cleaned</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if not task.cleaned_by %}
+                <form method="post" action="{% url 'mark_cleaned' task.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-primary">Mark Cleaned</button>
+                </form>
+              {% else %}
+                <span class="badge bg-success">✅ Already Cleaned</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">No rooms cleaned yet.</div>
+  {% endif %}
+
+</div>
+{% endblock %}

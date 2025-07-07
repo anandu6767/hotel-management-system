@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center mb-4">💼 Salary Report</h2>
+
+  <table class="table table-bordered table-striped shadow">
+    <thead class="table-dark">
+      <tr>
+        <th>Staff</th>
+        <th>Daily Rate</th>
+        <th>Days Present</th>
+        <th>Total Salary</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in staff_data %}
+      <tr>
+        <td>{{ item.user }}</td>
+        <td>₹{{ item.daily_rate }}</td>
+        <td>{{ item.days_present }}</td>
+        <td><strong>₹{{ item.total_salary }}</strong></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

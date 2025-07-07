@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .invoice-box { border: 1px solid #ddd; padding: 20px; }
+    .line-item { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>🧾 Hotel Booking Invoice</h2>
+  </div>
+
+  <div class="invoice-box">
+    <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+    <p><strong>Payment ID:</strong> {{ booking.razorpay_payment_id|default_if_none:"-" }}</p>
+    <p><strong>User:</strong> {{ booking.user.username }}</p>
+    <p><strong>Date:</strong> {{ booking.payment_time|date:"d M Y, h:i A"|default_if_none:"-" }}</p>
+
+    <hr>
+
+    <p class="line-item">🏨 Room: ₹{{ breakdown.room_price|floatformat:0 }}</p>
+    <p class="line-item">🛏️ Amenities: ₹{{ breakdown.amenity_price|floatformat:0 }}</p>
+    <p class="line-item">💆 Spa: ₹{{ breakdown.spa_price|floatformat:0 }}</p>
+    <p class="line-item">📦 Subtotal: ₹{{ breakdown.subtotal|floatformat:0 }}</p>
+    <p class="line-item">🧾 Tax (18%): ₹{{ breakdown.tax|floatformat:0 }}</p>
+    <p class="line-item">🎁 Discount: ₹{{ breakdown.discount|floatformat:0 }}</p>
+    <h3>💰 Total Paid: ₹{{ breakdown.total|floatformat:0 }}</h3>
+    <a href="{% url 'download_invoice' booking.id %}" class="btn btn-primary mt-3">
+  ⬇️ Download Invoice (PDF)
+</a>
+  </div>
+</body>
+</html>

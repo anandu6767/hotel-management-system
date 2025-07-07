@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<p>Welcome, {{ user.username }} (Admin)</p>
+<ul>
+  <li><a href="{% url 'admin:core_customuser_changelist' %}">👥 Manage Users</a></li>
+  <li><a href="{% url 'admin:core_booking_changelist' %}">📅 Manage Bookings</a></li>
+  <li><a href="{% url 'admin:core_room_changelist' %}">🛏️ Manage Rooms</a></li>
+  <li><a href="{% url 'admin:core_customuser_changelist' %}">👤 Manage Staff</a></li>
+</ul>
+{% endblock %}

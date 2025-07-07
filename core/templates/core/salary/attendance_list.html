@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+  <h2 class="text-center mb-4">🗓 Staff Attendance Records</h2>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered shadow">
+      <thead class="table-dark">
+        <tr>
+          <th>Staff Name</th>
+          <th>Role</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in attendance_records %}
+        <tr>
+          <td>{{ record.user.get_full_name|default:record.user.username }}</td>
+          <td>{{ record.user.role|title }}</td>
+          <td>{{ record.date }}</td>
+          <td>
+            {% if record.present %}
+              <span class="badge bg-success">Present</span>
+            {% else %}
+              <span class="badge bg-danger">Absent</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center">No attendance records found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

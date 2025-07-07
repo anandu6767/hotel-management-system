@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .btn {
+      background-color: #0d6efd;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎉 Welcome to Royal Crest, {{ user.first_name|default:user.username }}!</h2>
+
+  <p>Thank you for choosing our hotel. Your payment has been successfully received and your booking is confirmed.</p>
+
+  <h4>📄 Booking Summary:</h4>
+  <ul>
+    <li><strong>Booking ID:</strong> {{ booking.id }}</li>
+    <li><strong>Room:</strong> {{ booking.room.room_number }} ({{ booking.room.get_room_type_display }})</li>
+    <li><strong>Check-In:</strong> {{ booking.check_in }}</li>
+    <li><strong>Check-Out:</strong> {{ booking.check_out }}</li>
+    <li><strong>Total Paid:</strong> ₹{{ total }}</li>
+  </ul>
+
+  <p>You can download your invoice from the attached PDF.</p>
+
+  <h4>💬 Need Help?</h4>
+  <p>Feel free to contact us anytime. We're here to make your stay as comfortable as possible.</p>
+  <ul>
+    <li>Email: support@hotelbooking.com</li>
+    <li>Phone: +91 98765 43210</li>
+  </ul>
+  <p style="margin-top: 30px; color: #888;">We look forward to hosting you.<br>— Royal Crest Hotel Team</p>
+</body>
+</html>
