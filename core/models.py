@@ -52,6 +52,7 @@ class Room(models.Model):
     amenities = models.ManyToManyField(Amenity, blank=True)
     spa_services = models.ManyToManyField(SpaService, blank=True)  # ✅ NEW
     image = models.ImageField(upload_to='room_images/', blank=True, null=True)
+    needs_cleaning = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.room_number} - {self.room_type} ({'Available' if self.is_available else 'Occupied'})"

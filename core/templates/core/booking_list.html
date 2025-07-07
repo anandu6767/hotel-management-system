@@ -53,7 +53,9 @@
             <th>Status</th>
             <th>Payment</th>
             <th>Booked At</th>
-            <th>Actions</th>
+            {% if request.user.role != 'manager' %}
+              <th>Actions</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -82,30 +84,34 @@
                 {% endif %}
               </td>
               <td>{{ booking.created_at|date:"Y-m-d H:i" }}</td>
+              
+              {% if request.user.role != 'manager' %}
               <td>
                 {% now "Y-m-d" as today %}
                 {% with today_date=today|stringformat:"s" %}
-  {% if booking.status == 'Pending' and booking.check_in|stringformat:"s" == today_date %}
-    {% if booking.is_paid %}
-      <form method="post" action="{% url 'booking_check_in' booking.id %}" class="d-inline">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-success btn-sm">Check In</button>
-      </form>
-    {% else %}
-      <span class="badge bg-warning text-dark">Payment Pending</span>
-    {% endif %}
-  
-  {% elif booking.status == 'Checked In' and booking.check_in|stringformat:"s" <= today_date and booking.check_out|stringformat:"s" >= today_date %}
-    <form method="post" action="{% url 'booking_check_out' booking.id %}" class="d-inline">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-warning btn-sm">Check Out</button>
-    </form>
+                  {% if booking.status == 'Pending' and booking.check_in|stringformat:"s" == today_date %}
+                    {% if booking.is_paid %}
+                      <form method="post" action="{% url 'booking_check_in' booking.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm">Check In</button>
+                      </form>
+                    {% else %}
+                      <span class="badge bg-warning text-dark">Payment Pending</span>
+                    {% endif %}
+                  
+                  {% elif booking.status == 'Checked In' and booking.check_in|stringformat:"s" <= today_date and booking.check_out|stringformat:"s" >= today_date %}
+                    <form method="post" action="{% url 'booking_check_out' booking.id %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-warning btn-sm">Check Out</button>
+                    </form>
 
-  {% else %}
-    <span class="text-muted small">No Actions</span>
-  {% endif %}
-{% endwith %}
+                  {% else %}
+                    <span class="text-muted small">No Actions</span>
+                  {% endif %}
+                {% endwith %}
               </td>
+              {% endif %}
+
             </tr>
           {% endfor %}
         </tbody>

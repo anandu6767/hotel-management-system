@@ -424,8 +424,10 @@ def mark_payment_received(request, booking_id):
 
 @login_required
 def receptionist_dashboard(request):
-    return render(request, 'core/dashboard_receptionist.html')
-
+    rooms_to_clean = Room.objects.filter(needs_cleaning=True)
+    return render(request, 'core/dashboard_receptionist.html', {
+        'rooms_to_clean': rooms_to_clean,
+    })
 
 @login_required
 def housekeeping_dashboard(request):

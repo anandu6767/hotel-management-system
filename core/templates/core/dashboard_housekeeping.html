@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="container py-4">
 
   <!-- 🧹 Title -->
   <h2 class="text-center mb-4 fw-bold text-primary">🧹 Housekeeping Dashboard</h2>
+
+  <!-- ⚠️ Notification if rooms need cleaning -->
+  {% if rooms_to_clean %}
+    <div class="alert alert-warning text-center shadow-sm">
+      <strong>⚠️ {{ rooms_to_clean.count }} room(s) need cleaning!</strong><br>
+      Please attend to these rooms as soon as possible.
+    </div>
+  {% endif %}
 
   <!-- 🔘 Action Buttons -->
   <div class="row justify-content-center g-3 mb-5">
