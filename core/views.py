@@ -1,46 +1,57 @@
-# --- Django built-in imports ---
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import login, authenticate, logout
-from django.contrib import messages
-from django.http import HttpResponse
-from django.utils.dateparse import parse_date
-from django.db.models import Q
-from .utils import is_room_available
-from django.utils import timezone
-from datetime import date
-from django.views.decorators.http import require_POST
-from django.utils.timezone import now
-from .forms import MaintenanceForm
-from .models import Maintenance
-from django.contrib.auth.decorators import user_passes_test
-from .models import InventoryItem, InventoryUsageLog
-from .forms import InventoryItemForm, InventoryUsageForm
-from .forms import FeedbackForm
-from .models import Feedback
-from .utils import is_room_available
-from .utils import calculate_bill
-from django.db.models import Sum
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
+# --- Django Built-in Imports ---
+from datetime import date, datetime
 from io import BytesIO
-from django.core.mail import EmailMessage
-from .forms import GuestUserForm, GuestProfileForm, WalkInBookingForm
-from django.contrib.auth import get_user_model
-from .models import StaffSalary, StaffAttendance
-from .forms import StaffSalaryForm, StaffAttendanceForm
-from django.db.models import Count, F
-from django.http import HttpResponseForbidden
-from .models import Notification, User
-from datetime import datetime
-User = get_user_model()
-from .models import Room, Booking
-from .forms import RoomForm, BookingForm, CustomUserCreationForm, ReceptionistBookingForm
-from .models import Room, Booking, Maintenance
-from datetime import date
 
+from django.contrib import messages
+from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.mail import EmailMessage, send_mail
+from django.db.models import Count, F, Q, Sum
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.dateparse import parse_date
+from django.utils.timezone import now
+from django.views.decorators.http import require_POST
+
+
+# --- Project Imports ---
+from .forms import (
+    BookingForm,
+    CustomUserCreationForm,
+    FeedbackForm,
+    GuestProfileForm,
+    GuestUserForm,
+    InventoryItemForm,
+    InventoryUsageForm,
+    MaintenanceForm,
+    ReceptionistBookingForm,
+    StaffAttendanceForm,
+    StaffSalaryForm,
+    WalkInBookingForm
+)
+
+from .models import (
+    Booking,
+    Feedback,
+    InventoryItem,
+    InventoryUsageLog,
+    Maintenance,
+    Notification,
+    Room,
+    StaffAttendance,
+    StaffSalary,
+    
+)
+
+from .utils import (
+    calculate_bill,
+    is_room_available
+)
+User = get_user_model()
 # ==============================
-# 🔐 User Authentication Views
+#  User Authentication Views
 # ==============================
 
 def register_view(request):
@@ -104,25 +115,36 @@ def logout_view(request):
 def homepage(request):
     return render(request, 'core/home.html')
 
+@login_required
+def redirect_by_role(request):
+    role = request.user.role
+    if role == "admin":
+        return redirect('admin_dashboard')
+    elif role == "manager":
+        return redirect('manager_dashboard')
+    elif role == "receptionist":
+        return redirect('receptionist_dashboard')
+    elif role == "housekeeping":
+        return redirect('housekeeping_dashboard')
+    else:
+        return redirect('guest_dashboard')
+    
+
 
 # ========================
-# 🏨 Room Management Views
+#  Room Management Views
 # ========================
 
 @login_required(login_url='login')
 def room_list(request):
-    """
-    Displays a list of all rooms (available to logged-in users).
-    """
+   
     rooms = Room.objects.all()
     return render(request, 'core/room_list.html', {'rooms': rooms})
 
 
 @login_required(login_url='login')
 def room_create(request):
-    """
-    Allows creation of a new room entry using RoomForm.
-    """
+    
     form = RoomForm(request.POST or None)
     if form.is_valid():
         form.save()
@@ -132,9 +154,7 @@ def room_create(request):
 
 @login_required(login_url='login')
 def room_update(request, pk):
-    """
-    Updates an existing room based on its primary key.
-    """
+    
     room = get_object_or_404(Room, pk=pk)
     form = RoomForm(request.POST or None, instance=room)
     if form.is_valid():
@@ -145,9 +165,7 @@ def room_update(request, pk):
 
 @login_required(login_url='login')
 def room_delete(request, pk):
-    """
-    Deletes a room after confirmation.
-    """
+    
     room = get_object_or_404(Room, pk=pk)
     if request.method == 'POST':
         room.delete()
@@ -161,11 +179,11 @@ def available_rooms(request):
     check_in = request.GET.get('check_in')
     check_out = request.GET.get('check_out')
 
-    search_performed = False  # ✅ Default: False
+    search_performed = False  
     rooms = Room.objects.all()
 
     if check_in and check_out:
-        search_performed = True  # ✅ Set to True only when both dates exist
+        search_performed = True  
         try:
             check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
             check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
@@ -198,7 +216,7 @@ def available_rooms(request):
         'rooms': rooms,
         'check_in': check_in,
         'check_out': check_out,
-        'search_performed': search_performed  # ✅ Pass it to template
+        'search_performed': search_performed  #  Pass it to template
     }
     return render(request, 'core/available_rooms.html', context)
 
@@ -297,10 +315,7 @@ def booking_create(request, room_id=None):
 @login_required
 @require_POST
 def booking_check_in(request, booking_id):
-    """
-    Marks a booking as 'Checked In' if today >= check-in date and payment is completed.
-    Only accessible to admin, receptionist, or the guest themselves.
-    """
+    
     booking = get_object_or_404(Booking, id=booking_id)
 
     
@@ -313,7 +328,7 @@ def booking_check_in(request, booking_id):
         messages.error(request, "Cannot check in until payment is completed.")
         return redirect('booking_list')
 
-    # ✅ Date and status validation
+    #  Date and status validation
     if date.today() < booking.check_in:
         messages.error(request, "Cannot check in before the check-in date.")
     elif booking.status != 'Pending':
@@ -372,7 +387,7 @@ def cancel_booking(request, booking_id):
     return redirect('guest_bookings') 
 
 # ========================
-# 📊 Dashboard Views (Role-Based)
+#  Dashboard Views (Role-Based)
 # ========================
 
 @login_required
@@ -386,14 +401,14 @@ def is_manager(user):
 @login_required
 @user_passes_test(is_manager)
 def manager_dashboard(request):
-    # 📩 Feedback stats
+    #  Feedback stats
     unread_feedback_count = Feedback.objects.filter(is_read=False).count()
     low_rating_count = Feedback.objects.filter(rating__lte=2).count()
 
-    # 💰 Revenue
+    #  Revenue
     total_revenue = Booking.objects.filter(is_paid=True).aggregate(total=Sum('total'))['total'] or 0
 
-    # 🔔 Low inventory notifications
+    #  Low inventory notifications
     low_alerts = request.user.notification_set.filter(
         is_read=False,
         message__icontains='Inventory low'
@@ -492,14 +507,12 @@ def guest_dashboard(request):
 
 
 # ============================
-# 👤 Guest Booking Views
+#  Guest Booking Views
 # ============================
 
 @login_required
 def guest_booking_create(request):
-    """
-    Allows guests to create a booking for themselves with date conflict check.
-    """
+    
     if request.user.role != 'guest':
         return redirect('login')  
 
@@ -520,7 +533,7 @@ def guest_booking_create(request):
             booking.save()
             form.save_m2m()
 
-            # ✅ Create Notification for Guest
+            #  Create Notification for Guest
             Notification.objects.create(
                 user=booking.user,
                 message=f"✅ Your booking for Room {booking.room.room_number} is confirmed from {booking.check_in}."
@@ -554,18 +567,9 @@ def guest_booking_list(request):
 # ================================
 
 def is_receptionist(user):
-    """
-    Check if user is a receptionist.
-    Used with @user_passes_test for access control.
-    """
+    
     return user.is_authenticated and user.role == 'receptionist'
 
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import ReceptionistBookingForm
-from .utils import is_room_available  
-from .models import Booking
 
 def is_receptionist(user):
     return user.role == 'receptionist'
@@ -610,10 +614,7 @@ def walkin_booking(request):
 @login_required
 @user_passes_test(is_receptionist)
 def receptionist_booking_create(request):
-    """
-    Allows receptionists to create walk-in bookings on behalf of guests,
-    including amenities and spa selection.
-    """
+    
     if request.method == 'POST':
         form = ReceptionistBookingForm(request.POST)
         if form.is_valid():
@@ -621,12 +622,12 @@ def receptionist_booking_create(request):
             check_in = form.cleaned_data['check_in']
             check_out = form.cleaned_data['check_out']
 
-            # ✅ Check room availability
+            #  Check room availability
             if not is_room_available(room, check_in, check_out):
                 messages.error(request, "❌ Room is already booked for the selected dates.")
                 return redirect('receptionist_booking_create')
 
-            # ✅ Save booking
+            #  Save booking
             booking = form.save(commit=False)
             booking.created_at = now()
             booking.save()
@@ -652,9 +653,7 @@ def receptionist_booking_list(request):
 @login_required
 @user_passes_test(is_receptionist)
 def booking_cancel(request, booking_id):
-    """
-    Receptionist cancels a booking by ID.
-    """
+    
     booking = Booking.objects.get(id=booking_id)
     booking.status = 'Canceled'
     booking.save()
@@ -677,8 +676,10 @@ def payment_list(request):
         'total_paid': total_paid,
         'total_unpaid': total_unpaid,
     })
-
+#----------------------------------------------------
 #cleaning
+#------------------------------------------------------
+
 
 @login_required
 @require_POST
@@ -841,14 +842,15 @@ def inventory_edit(request, pk):
         form = InventoryItemForm(instance=item)
     return render(request, 'core/inventory_form.html', {'form': form, 'edit': True})
 
-
+#-------------------------------------------------------------------------------
 #------------payment--------------
+#---------------------------------------------------------------------------------
 
 @login_required
 def booking_payment_view(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
-    # 🧮 Calculate Bill
+    #  Calculate Bill
     bill = calculate_bill(booking)
 
     if request.method == 'POST':
@@ -874,22 +876,22 @@ client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_S
 def initiate_razorpay_payment(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
-    # 🔢 Calculate the full bill
+    #  Calculate the full bill
     bill = calculate_bill(booking)
 
-    # ✅ Convert total to paisa (round to avoid float issues)
+    #  Convert total to paisa (round to avoid float issues)
     amount_in_paisa = int(round(float(bill['total']) * 100))
 
-    # 💳 Create Razorpay Order
+    #  Create Razorpay Order
     payment = client.order.create({
         "amount": amount_in_paisa,  # paisa (₹ x 100)
         "currency": "INR",
         "receipt": f"booking_rcpt_{booking.id}",
         "payment_capture": 1
     })
-    print("✅ Created Razorpay Order:", payment)
+    print(" Created Razorpay Order:", payment)
 
-    # 💾 Save Razorpay order ID
+    #  Save Razorpay order ID
     booking.payment_id = payment['id']
     booking.save()
 
@@ -897,7 +899,7 @@ def initiate_razorpay_payment(request, booking_id):
         'booking': booking,
         'razorpay_key': settings.RAZORPAY_KEY_ID,
         'razorpay_order_id': payment['id'],
-        'amount': amount_in_paisa,  # ⚠️ Int only, no float/decimal
+        'amount': amount_in_paisa,  #  Int only, no float/decimal
         'user': request.user,
         'breakdown': bill,
     })
@@ -913,7 +915,7 @@ def payment_success(request):
         signature = request.POST.get('razorpay_signature')
 
         try:
-            # ✅ Step 1: Verify signature
+            #  Step 1: Verify signature
             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
             client.utility.verify_payment_signature({
                 'razorpay_order_id': order_id,
@@ -921,18 +923,28 @@ def payment_success(request):
                 'razorpay_signature': signature
             })
 
-            # ✅ Step 2: Update booking
+            #  Step 2: Update booking
             booking = Booking.objects.get(payment_id=order_id)
             booking.is_paid = True
             booking.paid_at = timezone.now()
             booking.razorpay_payment_id = payment_id
             booking.payment_time = timezone.now()
             booking.save()
+            # ✅ Notify Receptionist(s)
+            User = get_user_model()
+            message = f"💰 Payment received for Booking #{booking.id} (Room {booking.room.room_number}) by {booking.user.username}."
 
-            # ✅ Step 3: Generate bill breakdown
+            if not Notification.objects.filter(message=message, is_read=False).exists():
+                for receptionist in User.objects.filter(role='receptionist'):
+                    Notification.objects.create(
+                        user=receptionist,
+                        message=message
+                    )
+
+            #  Step 3: Generate bill breakdown
             bill = calculate_bill(booking)
 
-            # ✅ Step 4: Render PDF invoice
+            #  Step 4: Render PDF invoice
             html = render_to_string("core/invoice_pdf.html", {
                 "booking": booking,
                 "breakdown": bill,
@@ -941,7 +953,7 @@ def payment_success(request):
             pdf_file = BytesIO()
             pisa.CreatePDF(BytesIO(html.encode("UTF-8")), dest=pdf_file)
 
-            # ✅ Step 5: Send confirmation email with PDF
+            #  Step 5: Send confirmation email with PDF
             subject = f"🎉 Booking Confirmed - Room {booking.room.room_number} | Royal Crest"
             to_email = booking.user.email
 
@@ -1008,8 +1020,10 @@ def download_invoice_pdf(request, booking_id):
         return HttpResponse('PDF generation error', status=500)
     return response
 
-
+#---------------------------------------------
 #----feedback------
+#---------------------------------------------
+
 @login_required
 def feedback_list(request):
     if request.user.role not in ['admin', 'manager']:
@@ -1123,7 +1137,7 @@ def attendance_list(request):
 
 @login_required
 def all_notifications_view(request):
-    # ✅ Fetch all notifications, newest first
+    #  Fetch all notifications, newest first
     notifications = request.user.notification_set.order_by('-created_at')
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
 

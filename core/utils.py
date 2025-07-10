@@ -1,12 +1,10 @@
-from decimal import Decimal
-from .models import Booking
 from decimal import Decimal, ROUND_HALF_UP
-from .models import Notification, User
+from .models import Notification, Booking
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 def is_room_available(room, check_in, check_out):
-    """
-    Returns True if the room is available for the given dates.
-    """
+    
     return not Booking.objects.filter(
         room=room,
         check_in__lt=check_out,
@@ -14,7 +12,7 @@ def is_room_available(room, check_in, check_out):
     ).exists()
 
 
-from decimal import Decimal
+
 
 round2 = lambda x: x.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 

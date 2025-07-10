@@ -152,49 +152,61 @@
     </div>
   </main>
 
-  <!-- ✅ Sticky Footer -->
-  <footer class="bg-dark text-white mt-auto py-4">
-    <div class="container text-center text-md-start small">
-      <div class="row g-4">
-        <div class="col-md-4">
-          <h5 class="text-warning">🏨 About Us</h5>
-          <p>Premium hospitality and top-class comfort.</p>
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <span>About Us:</span>
-            <a href="{% url 'about_us' %}" class="text-white text-decoration-none">Click Here</a>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <h5 class="text-warning">🔗 Quick Links</h5>
-          <ul class="list-unstyled">
-  {% if not request.user.is_authenticated %}
-    <!-- 🏠 Show Home only on login page (when not logged in) -->
-    <li class="mb-2">
-      <a href="{% url 'home' %}" class="text-white text-decoration-none">Home</a>
-    </li>
+<footer class="bg-dark text-white mt-auto py-4">
+  <div class="container small">
+    <!-- 👇 row content is now centered -->
+    {% if not request.user.is_authenticated or request.user.role != 'manager' %}
+<div class="row g-4 justify-content-center text-center">
+  <!-- 🏨 About Us -->
+  <div class="col-12 col-sm-6 col-lg-4">
+    <h5 class="text-warning mb-3">🏨 About Us</h5>
+    <p>Premium hospitality and top‑class comfort.</p>
+    <a href="{% url 'about_us' %}" class="text-white text-decoration-none">
+      Learn more&nbsp;<i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+
+  <!-- 🔗 Quick Links -->
+  {% if not request.user.is_authenticated or request.user.role == 'guest' %}
+  <div class="col-12 col-sm-6 col-lg-4">
+    <h5 class="text-warning mb-3">🔗 Quick Links</h5>
+    <ul class="list-unstyled">
+      {% if not request.user.is_authenticated %}
+        <li class="mb-2">
+          <a href="{% url 'home' %}" class="text-white text-decoration-none">Home</a>
+        </li>
+      {% endif %}
+      {% if request.user.is_authenticated and request.user.role == 'guest' %}
+        <li class="mb-2">
+          <a href="{% url 'contact' %}" class="text-white text-decoration-none">Contact Us</a>
+        </li>
+        <li class="mb-2">
+          <a href="{% url 'guest_bookings' %}" class="text-white text-decoration-none">My Bookings</a>
+        </li>
+        <li>
+          <a href="{% url 'submit_feedback' booking_id=1 %}" class="text-white text-decoration-none">Feedback</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
   {% endif %}
-            <li class="mb-2 d-flex align-items-center gap-2">
-              <span>Contact Us:</span>
-              <a href="{% url 'contact' %}" class="text-white text-decoration-none">Click Here</a>
-            </li>
-            {% if request.user.is_authenticated %}
-              <li class="mb-2"><a href="{% url 'guest_bookings' %}" class="text-white text-decoration-none">My Bookings</a></li>
-              <li><a href="{% url 'submit_feedback' booking_id=1 %}" class="text-white text-decoration-none">Feedback</a></li>
-            {% endif %}
-          </ul>
-        </div>
-        <div class="col-md-4">
-          <h5 class="text-warning">📞 Contact</h5>
-          <p class="mb-2">Email: support@hotelbooking.com</p>
-          <p class="mb-2">Phone: +91 98765 43210</p>
-          <p class="mb-2">Location: Thrissur, Kerala</p>
-        </div>
-      </div>
-      <div class="text-center mt-4 text-secondary">
-        &copy; {{ year|default:2025 }} Hotel Management System. All rights reserved.
-      </div>
+
+  <!-- 📞 Contact -->
+  <div class="col-12 col-sm-6 col-lg-4">
+    <h5 class="text-warning mb-3">📞 Contact</h5>
+    <p class="mb-2">support@hotelbooking.com</p>
+    <p class="mb-2">+91 98765 43210</p>
+    <p>Thrissur, Kerala</p>
+  </div>
+</div>
+{% endif %}
+
+    <div class="text-center mt-4 text-secondary">
+      &copy;&nbsp;{{ year|default:2025 }}&nbsp;Hotel Management System. All rights reserved.
     </div>
-  </footer>
+  </div>
+</footer>
+
 
   <!-- ✅ Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

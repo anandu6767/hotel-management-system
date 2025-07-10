@@ -20,12 +20,12 @@ class RoomForm(forms.ModelForm):
         model = Room
         fields = '__all__'
         widgets = {
-            'amenities': forms.CheckboxSelectMultiple(),  # Multiple checkboxes
+            'amenities': forms.CheckboxSelectMultiple(),  
             'spa_services': forms.CheckboxSelectMultiple(),
         }
         
 class BookingForm(forms.ModelForm):
-    # ✅ Extra fields for amenities and spa services with checkboxes
+    
     amenities = forms.ModelMultipleChoiceField(
         queryset=Amenity.objects.all(),
         required=False,
@@ -51,16 +51,16 @@ class BookingForm(forms.ModelForm):
         request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
 
-        # ✅ Add Bootstrap class to all fields except checkboxes
+        
         for field_name, field in self.fields.items():
             if not isinstance(field.widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)):
                 existing_class = field.widget.attrs.get('class', '')
                 field.widget.attrs['class'] = f"{existing_class} form-control".strip()
 
-        # ✅ Make ID proof required
+        
         self.fields['id_proof'].required = True
 
-        # ✅ Pre-fill check-in/check-out from GET parameters if available
+        #  Pre-fill check-in/check-out from GET parameters if available
         if request:
             check_in = request.GET.get('check_in')
             check_out = request.GET.get('check_out')
@@ -84,7 +84,7 @@ class BookingForm(forms.ModelForm):
 
         
 class ReceptionistBookingForm(forms.ModelForm):
-    # ✅ Amenities and Spa Services with Bootstrap styling
+    #  Amenities and Spa Services with Bootstrap styling
     amenities = forms.ModelMultipleChoiceField(
         queryset=Amenity.objects.all(),
         required=False,

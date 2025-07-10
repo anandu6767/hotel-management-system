@@ -7,7 +7,8 @@ urlpatterns = [
     path('', views.homepage, name='home'),
     path('login/', views.login_view, name='login'),            # User login page
     path('register/', views.register_view, name='register'),   # User registration page
-    path('logout/', views.logout_view, name='logout'),         # Logout and redirect to login
+    path('logout/', views.logout_view, name='logout'),   
+    
 
     # 🏨 Room Management (Admin/Manager)
     path('rooms/', views.room_list, name='room_list'),                  # View list of all rooms
@@ -57,7 +58,7 @@ urlpatterns = [
     
     #inventory
     path('inventory/', views.inventory_list, name='inventory_list'),
-    path('inventory/add/', views.inventory_create, name='inventory_create'),  # ✅ This must exist
+    path('inventory/add/', views.inventory_create, name='inventory_create'),  
     path('inventory/log-usage/', views.log_inventory_usage, name='log_inventory_usage'),
     path('inventory/<int:pk>/edit/', views.inventory_edit, name='inventory_edit'),
     
@@ -82,6 +83,7 @@ urlpatterns = [
     path('salary/attendance/list/', views.attendance_list, name='attendance_list'),
     path('notifications/', views.all_notifications_view, name='all_notifications'),
     path('notifications/mark-read/', views.mark_notifications_read, name='mark_notifications_read'),
+    
     
     path('about/', views.about_us, name='about_us'),
     path('contact/', views.contact_us_view, name='contact'),

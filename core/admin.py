@@ -52,7 +52,7 @@ class BookingAdmin(admin.ModelAdmin):
         'cleaned_by',
         'cleaned_at',
         'created_at',
-        'id_proof_thumbnail',  # ✅ Show ID proof thumbnail
+        'id_proof_thumbnail',  
     )
     list_filter = (
         'status',

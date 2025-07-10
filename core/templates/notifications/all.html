@@ -4,6 +4,9 @@
 {% block content %}
 <div class="container mt-5">
   <h2 class="text-center mb-4">🔔 All Notifications</h2>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+  <button id="mark-read-btn" class="btn btn-success btn-sm">Mark All as Read</button>
+</div>
 
   {% if notifications %}
     <ul class="list-group shadow-sm">
@@ -23,4 +26,28 @@
     <div class="alert alert-info text-center">No notifications to show.</div>
   {% endif %}
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById('mark-read-btn').addEventListener('click', function () {
+    fetch("{% url 'mark_notifications_read' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        document.querySelectorAll('.list-group-item.bg-light').forEach(item => {
+          item.classList.remove('bg-light');
+          let badge = item.querySelector('.badge');
+          if (badge) badge.remove();
+        });
+      }
+    });
+  });
+</script>
 {% endblock %}
